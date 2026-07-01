@@ -26,6 +26,9 @@ function Layout() {
                         <ListItemButton component={Link} to="/library">
                             <ListItemText primary="Library" />
                         </ListItemButton>
+                        <ListItemButton component={Link} to="/share">
+                            <ListItemText primary="Share" />
+                        </ListItemButton>
                     </List>
                 </Box>
             </Drawer>

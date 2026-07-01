@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import L from "leaflet";
 import type { LatLngTuple } from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -24,12 +24,6 @@ type SurfSpot = {
   longitude: number;
 };
 
-const initialSurfSpots: SurfSpot[] = [
-  { id: 1, name: "Bradford Beach", latitude: 43.0634, longitude: -87.8724 },
-  { id: 2, name: "McKinley Beach", latitude: 43.0509, longitude: -87.8833 },
-  { id: 3, name: "South Shore Beach", latitude: 42.9993, longitude: -87.8832 },
-];
-
 type MapClickHandlerProps = {
   onMapClick: (location: LatLngTuple) => void;
 };
@@ -44,10 +38,27 @@ function MapClickHandler({ onMapClick }: MapClickHandlerProps) {
   return null;
 }
 
-export default function Home() {
-  const [spots, setSpots] = useState<SurfSpot[]>(initialSurfSpots);
+export default function Share() {
+  const [spots, setSpots] = useState<SurfSpot[]>([]);
   const [newSpotName, setNewSpotName] = useState("");
   const [pendingLocation, setPendingLocation] = useState<LatLngTuple | null>(null);
+
+  useEffect(() => {
+
+    fetch("http://localhost:8000/api/locations")
+    .then((res) => res.json())
+    .then((data) => setSpots(data))
+
+  }, []);
+
+  function addLocation(name, latitude, longitude) {
+    fetch("http://localhost:8000/api/locations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, latitude, longitude }),
+    })
+    .then((res) => res.json())
+  }
 
   function handleAddSpot(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,6 +76,9 @@ export default function Home() {
         longitude: pendingLocation[1],
       },
     ]);
+
+    addLocation(newSpotName, pendingLocation[0], pendingLocation[1]);
+
     setNewSpotName("");
     setPendingLocation(null);
   }

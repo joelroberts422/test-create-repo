@@ -33,7 +33,6 @@ function SearchSection() {
           options={photos}
           sx={{ width: 320 }}
           renderInput={(params) => <TextField {...params} label="Find a photo" />}
-          onChange={(_event, value) => console.log("picked:", value)}  // value is the chosen option
         />
       </Paper>
     );
